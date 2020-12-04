@@ -31,4 +31,46 @@ router.get("/verify", (req, res) => {
       });
     });
 });
+
+// @route GET api/auth/login
+// @desc  Main auth middleware for other services
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return res.status(400).json({
+      response: "Email or Password not provided.",
+    });
+
+  await User.findOne({
+    email: email,
+  }).then((user) => {
+    if (!user)
+      return res.status(400).json({
+        response: "Email does not exsist.",
+      });
+    bcrypt.compare(password, user.password).then((equal) => {
+      if (!equal)
+        return res.status(400).json({
+          response: "Wrong Email or Password.",
+        });
+
+      jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+        },
+        process.env.JWT_SPOOKY_SECRET,
+        (error, token) => {
+          if (error) throw error;
+          res.send({
+            id: user.id,
+            username: user.username,
+            token: token,
+          });
+        }
+      );
+    });
+  });
+});
 module.exports = router;
