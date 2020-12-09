@@ -7,16 +7,27 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const User = require("../models/User");
 
-// @route GET api/user
-// @desc  Get a user
+/**
+ * @swagger
+ * /api/user/:
+ *  get:
+ *    parameters:
+ *    - name: Token
+ *
+ *    description: Gets current user
+ *    responses:
+ *      '200':
+ *        description: User Object
+ */
 router.get("/", authMiddleware, async (req, res) => {
   await User.findOne({
     _id: req.user.id,
   })
     .then((user) =>
       res.status(200).json({
-        response: {
+        user: {
           id: user._id,
+          username: user.username,
           email: user.email,
         },
       })
@@ -28,8 +39,20 @@ router.get("/", authMiddleware, async (req, res) => {
     );
 });
 
-// @route POST api/user/create
-// @desc  Register a user
+/**
+ * @swagger
+ * /api/user/create:
+ *  post:
+ *    parameters:
+ *    - name: username
+ *    - name: email
+ *    - name: password
+ *
+ *    description: Register funcionality
+ *    responses:
+ *      '200':
+ *        description: User Registered
+ */
 router.post("/create", async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -64,10 +87,8 @@ router.post("/create", async (req, res) => {
             { expiresIn: 3600 },
             (error, token) => {
               if (error) throw error;
-              res.send({
-                id: user.id,
-                email: user.email,
-                token,
+              res.json({
+                response: "Alright, taking you in...",
               });
             }
           )
@@ -77,8 +98,19 @@ router.post("/create", async (req, res) => {
   });
 });
 
-// @route PUT api/user
-// @desc  Update a user
+/**
+ * @swagger
+ * /api/user/:
+ *  put:
+ *    parameters:
+ *    - name: username
+ *    - name: email
+ *
+ *    description: Updateds user information
+ *    responses:
+ *      '200':
+ *        description: User info updated
+ */
 router.put("/", authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.id).catch((error) => {
     return res.status(404).json({
@@ -101,11 +133,27 @@ router.put("/", authMiddleware, async (req, res) => {
   await User.updateOne({ _id: user._id }, user).catch((error) => {
     return res.status(400).json({ response: "User couldn't be updated" });
   });
-  return res.status(200).json(user);
+  return res.status(200).json({
+    response: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    },
+  });
 });
 
-// @route DELETE api/user
-// @desc  Delete a user
+/**
+ * @swagger
+ * /api/user/:
+ *  delete:
+ *    parameters:
+ *    - name: token
+ *
+ *    description: Deletes current user
+ *    responses:
+ *      '200':
+ *        description: User Deleted
+ */
 router.delete("/", authMiddleware, async (req, res) => {
   await User.findById(req.user.id)
     .then((user) =>

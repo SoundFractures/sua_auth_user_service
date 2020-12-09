@@ -3,12 +3,23 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const authMiddleware = require("../middleware/authMiddleware");
 const Auth = require("../services/auth");
 const User = require("../models/User");
 
-// @route GET api/auth/verify
-// @desc  Main auth middleware for other services
+/**
+ * @swagger
+ * /api/auth/verify:
+ *  get:
+ *    parameters:
+ *    - name: Token
+ *      description: The AUTH header token of type Bearer
+ *    description: Main auth middleware for other services
+ *    responses:
+ *      '200':
+ *        description: User ID (Number)
+ *      '403':
+ *        description: Token Invalid
+ */
 router.get("/verify", (req, res) => {
   Auth.checkUserToken(req)
     .then((user) => {
@@ -21,7 +32,7 @@ router.get("/verify", (req, res) => {
         })
         .catch((error) =>
           res.status(404).json({
-            response: "User couldn't be collected.",
+            response: "User couldn't be collected",
           })
         );
     })
@@ -32,14 +43,25 @@ router.get("/verify", (req, res) => {
     });
 });
 
-// @route GET api/auth/login
-// @desc  Main auth middleware for other services
+/**
+ * @swagger
+ * /api/auth/login:
+ *  post:
+ *    parameters:
+ *    - name: username
+ *    - name: password
+ *
+ *    description: Login funcionality
+ *    responses:
+ *      '200':
+ *        description: Token
+ */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
+  console.log(req);
   if (!email || !password)
     return res.status(400).json({
-      response: "Email or Password not provided.",
+      response: "Email or Password not provided",
     });
 
   await User.findOne({
@@ -47,12 +69,12 @@ router.post("/login", async (req, res) => {
   }).then((user) => {
     if (!user)
       return res.status(400).json({
-        response: "Email does not exsist.",
+        response: "Email does not exsist",
       });
     bcrypt.compare(password, user.password).then((equal) => {
       if (!equal)
         return res.status(400).json({
-          response: "Wrong Email or Password.",
+          response: "Wrong Email or Password",
         });
 
       jwt.sign(
@@ -61,11 +83,10 @@ router.post("/login", async (req, res) => {
           email: user.email,
         },
         process.env.JWT_SPOOKY_SECRET,
+        { expiresIn: 3600 },
         (error, token) => {
           if (error) throw error;
           res.send({
-            id: user.id,
-            username: user.username,
             token: token,
           });
         }
