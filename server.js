@@ -23,13 +23,14 @@ app.use(cors());
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 mongoose
-  .connect(process.env.db, {
-    useNewUrlParser: true,
-  })
+  .connect(
+    "mongodb+srv://Tomaz:UO4wOlICjMROU06M@cluster0.s2wi7.mongodb.net/sua?retryWrites=true&w=majority",
+    {
+      useNewUrlParser: true,
+    }
+  )
   .then(() => console.log("Mongo DB | Connected"))
   .catch((error) => console.log(error));
-
-const port = process.env.PORT;
 
 // Routes
 app.get("/test", (req, res) => {
@@ -39,4 +40,4 @@ app.get("/test", (req, res) => {
 app.use("/api/user", require("./routes/user_api"));
 app.use("/api/auth", require("./routes/auth_api"));
 
-app.listen(port);
+app.listen(3000);

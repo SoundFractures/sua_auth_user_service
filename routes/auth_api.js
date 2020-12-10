@@ -82,7 +82,7 @@ router.post("/login", async (req, res) => {
           id: user.id,
           email: user.email,
         },
-        process.env.JWT_SPOOKY_SECRET,
+        "sua2020-spoooooooky_key-or_should_i_say-SpooooKey-:D",
         { expiresIn: 3600 },
         (error, token) => {
           if (error) throw error;
