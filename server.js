@@ -40,4 +40,4 @@ app.get("/test", (req, res) => {
 app.use("/api/user", require("./routes/user_api"));
 app.use("/api/auth", require("./routes/auth_api"));
 
-app.listen(3000);
+app.listen(4000);

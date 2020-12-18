@@ -77,22 +77,11 @@ router.post("/create", async (req, res) => {
       bcrypt.hash(newUser.password, salt, (error, hash) => {
         if (error) throw error;
         newUser.password = hash;
-        newUser.save().then((user) =>
-          jwt.sign(
-            {
-              id: user.id,
-              email: user.email,
-            },
-            process.env.JWT_SPOOKY_SECRET,
-            { expiresIn: 3600 },
-            (error, token) => {
-              if (error) throw error;
-              res.json({
-                response: "Alright, taking you in...",
-              });
-            }
-          )
-        );
+        newUser.save().then((user) => {
+          res.status(200).json({
+            response: "Register successful",
+          });
+        });
       });
     });
   });

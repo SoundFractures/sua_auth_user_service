@@ -1,7 +1,7 @@
 FROM node:14.15
-WORKDIR /app
-COPY package.json ./app
+WORKDIR /usr/src/app
+COPY package*.json ./
 RUN npm install
-COPY . /app
-EXPOSE 3000
+COPY . .
+EXPOSE 4000
 CMD [ "npm","start" ]

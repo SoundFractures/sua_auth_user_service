@@ -16,18 +16,6 @@ const UserSchema = new Schema({
     required: true,
     default: "User",
   },
-  plans: {
-    type: Array,
-    required: true,
-    default: [
-      {
-        id_destination: String,
-        transportIds: Array,
-        accommudationIds: Array,
-        todoListId: String,
-      },
-    ],
-  },
 });
 
 module.exports = Contact = mongoose.model("user", UserSchema);

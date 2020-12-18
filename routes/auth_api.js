@@ -9,7 +9,7 @@ const User = require("../models/User");
 /**
  * @swagger
  * /api/auth/verify:
- *  get:
+ *  post:
  *    parameters:
  *    - name: Token
  *      description: The AUTH header token of type Bearer
@@ -20,7 +20,7 @@ const User = require("../models/User");
  *      '403':
  *        description: Token Invalid
  */
-router.get("/verify", (req, res) => {
+router.post("/verify", (req, res) => {
   Auth.checkUserToken(req)
     .then((user) => {
       User.findOne({
@@ -58,7 +58,6 @@ router.get("/verify", (req, res) => {
  */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log(req);
   if (!email || !password)
     return res.status(400).json({
       response: "Email or Password not provided",
