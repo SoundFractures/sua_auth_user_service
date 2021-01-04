@@ -18,4 +18,4 @@ const UserSchema = new Schema({
   },
 });
 
-module.exports = Contact = mongoose.model("user", UserSchema);
+module.exports = Contact = mongoose.model("test_user", UserSchema);

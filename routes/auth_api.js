@@ -28,15 +28,21 @@ router.post("/verify", (req, res) => {
       })
         .then((user) => {
           console.log(user.id);
+          res.messageType = "INFO";
+          res.message = "Verification successful";
           res.status(200).json({ response: user.id });
         })
-        .catch((error) =>
+        .catch((error) => {
+          res.message = "User couldn't be collected";
+          res.messageType = "ERROR";
           res.status(404).json({
             response: "User couldn't be collected",
-          })
-        );
+          });
+        });
     })
     .catch((error) => {
+      res.messageType = "ERROR";
+      res.message = "User access forbidden";
       return res.status(403).json({
         response: error,
       });
@@ -58,23 +64,32 @@ router.post("/verify", (req, res) => {
  */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
+  if (!email || !password) {
+    res.messageType = "WARN";
+    res.message = "Email or Password not provided";
     return res.status(400).json({
       response: "Email or Password not provided",
     });
+  }
 
   await User.findOne({
     email: email,
   }).then((user) => {
-    if (!user)
+    if (!user) {
+      res.messageType = "WARN";
+      res.message = "Email does not exsist";
       return res.status(400).json({
         response: "Email does not exsist",
       });
+    }
     bcrypt.compare(password, user.password).then((equal) => {
-      if (!equal)
+      if (!equal) {
+        res.messageType = "WARN";
+        res.message = "Wrong Email or Password";
         return res.status(400).json({
           response: "Wrong Email or Password",
         });
+      }
 
       jwt.sign(
         {
@@ -85,6 +100,8 @@ router.post("/login", async (req, res) => {
         { expiresIn: 3600 },
         (error, token) => {
           if (error) throw error;
+          res.messageType = "INFO";
+          res.message = "Login successful";
           res.send({
             token: token,
           });

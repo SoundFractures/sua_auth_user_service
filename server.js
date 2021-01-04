@@ -4,6 +4,7 @@ var cors = require("cors");
 var bodyParser = require("body-parser");
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const messageMiddleware = require("./middleware/messageMiddleware");
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -32,8 +33,10 @@ mongoose
   .then(() => console.log("Mongo DB | Connected"))
   .catch((error) => console.log(error));
 
+app.use(messageMiddleware);
 // Routes
 app.get("/test", (req, res) => {
+  res.banana = "KUADEJ";
   res.send("321 db");
 });
 

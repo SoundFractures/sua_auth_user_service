@@ -6,6 +6,8 @@ async function authMiddleware(req, res, next) {
       next();
     })
     .catch((error) => {
+      res.messageType = "ERROR";
+      res.message = "Usuccessful verification";
       return res.status(403).json({
         response: error,
       });

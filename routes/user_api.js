@@ -23,20 +23,24 @@ router.get("/", authMiddleware, async (req, res) => {
   await User.findOne({
     _id: req.user.id,
   })
-    .then((user) =>
+    .then((user) => {
+      res.message = "User collected";
+      res.messageType = "INFO";
       res.status(200).json({
         user: {
           id: user._id,
           username: user.username,
           email: user.email,
         },
-      })
-    )
-    .catch((error) =>
+      });
+    })
+    .catch((error) => {
+      res.messageType = "ERROR";
+      res.message = "User couldn't be collected";
       res.status(404).json({
         response: "User couldn't be collected",
-      })
-    );
+      });
+    });
 });
 
 /**
@@ -58,6 +62,8 @@ router.post("/create", async (req, res) => {
 
   // Chech if inputs are empty
   if (!username || !email || !password) {
+    res.messageType = "WARN";
+    res.message = "Username, Email or Password not specified";
     return res
       .status(400)
       .json({ response: "Username, Email or Password not specified" });
@@ -65,7 +71,11 @@ router.post("/create", async (req, res) => {
 
   //Check if user exsists, if not register
   await User.findOne({ email }).then((user) => {
-    if (user) return res.status(400).json({ response: "User already exsists" });
+    if (user) {
+      res.messageType = "WARN";
+      res.message = "User already exsists";
+      return res.status(400).json({ response: "User already exsists" });
+    }
 
     const newUser = new User({
       email,
@@ -78,6 +88,8 @@ router.post("/create", async (req, res) => {
         if (error) throw error;
         newUser.password = hash;
         newUser.save().then((user) => {
+          res.message = "Register successful";
+          res.messageType = "INFO";
           res.status(200).json({
             response: "Register successful",
           });
@@ -102,6 +114,8 @@ router.post("/create", async (req, res) => {
  */
 router.put("/", authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.id).catch((error) => {
+    res.messageType = "ERROR";
+    res.message = "User not found";
     return res.status(404).json({
       response: "User of that ID not found",
     });
@@ -120,8 +134,12 @@ router.put("/", authMiddleware, async (req, res) => {
     });
   }
   await User.updateOne({ _id: user._id }, user).catch((error) => {
+    res.messageType = "ERROR";
+    res.message = "User couldn't be updated";
     return res.status(400).json({ response: "User couldn't be updated" });
   });
+  res.messageType = "INFO";
+  res.message = "User updated";
   return res.status(200).json({
     response: {
       id: user._id,
@@ -146,16 +164,20 @@ router.put("/", authMiddleware, async (req, res) => {
 router.delete("/", authMiddleware, async (req, res) => {
   await User.findById(req.user.id)
     .then((user) =>
-      user.remove().then(() =>
+      user.remove().then(() => {
+        res.messageType = "INFO";
+        res.message = "User deleted successfully";
         res.json({
-          response: "User deleted successfully.",
-        })
-      )
-    )
-    .catch((error) =>
-      res.status(404).json({
-        response: "User of that ID not found.",
+          response: "User deleted successfully",
+        });
       })
-    );
+    )
+    .catch((error) => {
+      res.messageType = "ERROR";
+      res.message = "User not found";
+      res.status(404).json({
+        response: "User of that ID not found",
+      });
+    });
 });
 module.exports = router;
