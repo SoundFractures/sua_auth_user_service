@@ -13,7 +13,7 @@ async function checkUserToken(req) {
   }
 
   return await new Promise((resolve, reject) => {
-    if (!token) reject("Token not found.");
+    if (!token) reject("Token was not found.");
 
     jwt.verify(
       token,
@@ -25,4 +25,6 @@ async function checkUserToken(req) {
     );
   });
 }
-module.exports = { checkUserToken };
+module.exports = {
+  checkUserToken
+};
