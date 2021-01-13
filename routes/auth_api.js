@@ -24,12 +24,12 @@ router.post('/verify', (req, res) => {
   Auth.checkUserToken(req)
     .then((user) => {
       User.findOne({
-        _id: user.id
+        _id: user
       })
         .then((user) => {
           res.messageType = 'INFO'
           res.message = 'Verification successful'
-          res.status(200).json({ response: user.id })
+          res.status(200).json({ response: user._id })
         })
         .catch((error) => {
           res.message = "User couldn't be collected"
@@ -96,7 +96,7 @@ router.post('/login', async (req, res) => {
           email: user.email
         },
         'sua2020-spoooooooky_key-or_should_i_say-SpooooKey-:D',
-        { expiresIn: 3600 },
+        { expiresIn: 7200 },
         (error, token) => {
           if (error) throw error
           res.messageType = 'INFO'
