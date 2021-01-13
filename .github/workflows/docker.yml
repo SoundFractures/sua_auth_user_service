@@ -1,32 +1,29 @@
 name: Build Docker
-on: 
+on:
   push:
-    branches: 
+    branches:
       - master
 jobs:
   test:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: test funcionalities
-           run: |
-            npm ci
-            npm test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: test funcionalities
+        run: |
+          npm ci
+          npm test
 
   build:
-      runs-on: ubuntu-latest
-        
-      steps:
-        - uses: actions/checkout@v2
-        - name: docker login
-          env:
-            DOCKER_USER: ${{ secrets.DOCKER_USER }} 
-            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}  
-          run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-        - name: docker build app
-          run: docker build -t tomzz/auth_user_service:latest .
-        - name: docker push
-          run: docker push tomzz/auth_user_service:latest
-          
-     
-     
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker login
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - name: docker build app
+        run: docker build -t tomzz/auth_user_service:latest .
+      - name: docker push
+        run: docker push tomzz/auth_user_service:latest
