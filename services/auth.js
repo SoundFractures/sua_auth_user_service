@@ -15,11 +15,7 @@ async function checkUserToken(req) {
   catch {
     reject("Token not found");
   }
-  
-
-  
     if (!token) reject("Token not found");
-
     jwt.verify(
       token,
       "sua2020-spoooooooky_key-or_should_i_say-SpooooKey-:D",

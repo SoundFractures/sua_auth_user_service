@@ -21,7 +21,7 @@ const User = require("../models/User");
  */
 router.get("/", authMiddleware, async (req, res) => {
   await User.findOne({
-    _id: req.user.id,
+    _id: req.user,
   })
     .then((user) => {
       res.message = "User collected";
@@ -113,13 +113,14 @@ router.post("/create", async (req, res) => {
  *        description: User info updated
  */
 router.put("/", authMiddleware, async (req, res) => {
-  const user = await User.findById(req.user.id).catch((error) => {
+  const user = await User.findById(req.user).catch((error) => {
     res.messageType = "ERROR";
     res.message = "User not found";
     return res.status(404).json({
       response: "User of that ID not found",
     });
   });
+  console.log(user)
   user.username = req.body.username || user.username;
   user.email = req.body.email || user.email;
 
@@ -162,7 +163,7 @@ router.put("/", authMiddleware, async (req, res) => {
  *        description: User Deleted
  */
 router.delete("/", authMiddleware, async (req, res) => {
-  await User.findById(req.user.id)
+  await User.findById(req.user)
     .then((user) =>
       user.remove().then(() => {
         res.messageType = "INFO";
